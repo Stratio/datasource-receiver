@@ -54,25 +54,6 @@ JavaReceiverInputDStream receiverStream = DatasourceUtils.createJavaStream(javaS
 
 ```
 
-| Parameter                 | Description                  | Optional                             |
-|---------------------------|------------------------------|--------------------------------------|
-| host                      | Datasource host                | Yes (default: localhost)             |
-| queueName                 | Queue name                   | Yes                                  |
-| exchangeName              | Exchange name                | Yes (default: rabbitmq-exchange)     |
-| exchangeType              | Exchange type                | Yes (default: direct)                |
-| routingKeys               | Routing keys comma separated | Yes                                  |
-| vHost                     | Datasource vHost               | Yes                                  |
-| username                  | Datasource username            | Yes                                  |
-| password                  | Datasource password            | Yes                                  |
-| storageLevel              | Apache Spark storage level   | Yes (default: MEMORY_AND_DISK_SER_2) |
-| x-max-length              | Datasource queue property      | Yes                                  |
-| x-message-ttl             | Datasource queue property      | Yes                                  |
-| x-expires                 | Datasource queue property      | Yes                                  |
-| x-max-length-bytes        | Datasource queue property      | Yes                                  |
-| x-dead-letter-exchange    | Datasource queue property      | Yes                                  |
-| x-dead-letter-routing-key | Datasource queue property      | Yes                                  |
-| x-max-priority            | Datasource queue property      | Yes                                  |
-
 # License #
 
 Licensed to STRATIO (C) under one or more contributor license agreements.
