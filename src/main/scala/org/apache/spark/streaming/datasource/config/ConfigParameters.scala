@@ -22,12 +22,16 @@ object ConfigParameters {
    */
   val RememberDuration = "rememberDuration"
   val StorageLevelKey = "storageLevel"
+  val StopGracefully = "stopGracefully"
+  val StopSparkContext = "stopSparkContext"
   val SparkConsumerPropertiesKeys =
-    List(StorageLevelKey, RememberDuration)
+    List(StorageLevelKey, RememberDuration, StopGracefully, StopSparkContext)
 
   /**
    * Configuration Defaults
    */
   val DefaultStorageLevel = "MEMORY_ONLY"
   val DefaultMinRememberDuration = "60s"
+  val DefaultStopGracefully = true
+  val DefaultStopSparkContext = false
 }

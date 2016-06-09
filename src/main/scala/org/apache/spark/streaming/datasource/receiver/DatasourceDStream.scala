@@ -58,6 +58,9 @@ class DatasourceDStream[C <: SQLContext](
    * by default DefaultMinRememberDuration = 60s * slideWindow
    */
   private val userRememberDuration = getRememberDuration(datasourceParams)
+  private val stopGracefully = getStopGracefully(datasourceParams)
+  private val stopSparkContext = getStopSparkContext(datasourceParams)
+
 
   userRememberDuration match {
     case Some(duration) =>
@@ -128,16 +131,13 @@ class DatasourceDStream[C <: SQLContext](
 
       progressInputSentences = Option(datasourceRDD.progressInputSentences)
 
-      if (rddSize == 0 && inputSentences.stopConditions.fold(false) {
-        _.stopWhenEmpty
-      }) {
+      if (rddSize == 0 && inputSentences.stopConditions.fold(false) {_.stopWhenEmpty})
         computingStopped = true
-      }
 
       Option(datasourceRDD)
     } else {
       if (inputSentences.stopConditions.isDefined && inputSentences.stopConditions.get.finishContextWhenEmpty)
-        _ssc.stop()
+        _ssc.stop(stopSparkContext, stopGracefully)
       None
     }
   }

@@ -24,12 +24,6 @@ case class OffsetField(
                         value: Option[Any] = None
                       ) {
 
-  def this(name: String, operator: OrderRelation, value: Any) =
-    this(name, operator, Option(value))
-
-  def this(name: String, value: Any) =
-    this(name, >=, value)
-
   override def toString: String =
     s"$name,$value,${operator.toString}"
 
@@ -38,17 +32,45 @@ case class OffsetField(
 
   def extractConditionSentence(sqlQuery: String): String = {
     value.fold("") { case valueExtracted =>
-      val prefix = if (sqlQuery.toUpperCase.contains("WHERE")) " AND " else " WHERE "
-
-      prefix + s" $name ${operator.toString} ${valueToSqlSentence(valueExtracted)} "
+      s" WHERE $name ${operator.toString} ${valueToSqlSentence(valueExtracted)} "
     }
   }
 
-  def extractOrderSentence(sqlQuery: String): String =
-    if (!sqlQuery.toUpperCase.contains("ORDER BY"))
-      s" ORDER BY $name ${OffsetOperator.toOrderOperator(operator).toString}"
-    else ""
+  def extractOrderSentence(sqlQuery: String, inverse: Boolean = true): String =
+    s" ORDER BY $name ${
+      if (inverse) OffsetOperator.toInverseOrderOperator(operator).toString
+      else OffsetOperator.toOrderOperator(operator)
+    }"
 
   private def valueToSqlSentence(value: Any): String =
     if (value.isInstanceOf[String]) s"'${value.toString}'" else value.toString
+}
+
+object OffsetField {
+
+  /**
+   * Construct objects that contains the field options for monitoring tables in datasources
+   *
+   * @param name     Field name of the table
+   * @param operator Operator that compare the table data with the last offset field value
+   * @param value    Value for the offset field
+   * @return
+   */
+  def apply(
+             name: String,
+             operator: OrderRelation,
+             value: Any
+           ): OffsetField = new OffsetField(name, operator, Option(value))
+
+  /**
+   * Construct objects that contains the field options for monitoring tables in datasources
+   *
+   * @param name  Field name of the table
+   * @param value Value for the offset field, initially can be empty
+   * @return
+   */
+  def apply(
+             name: String,
+             value: Any
+           ): OffsetField = new OffsetField(name, >=, Option(value))
 }
