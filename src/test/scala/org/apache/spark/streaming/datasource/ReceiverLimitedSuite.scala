@@ -21,7 +21,7 @@ import org.apache.spark.sql.SQLContext
 import org.apache.spark.streaming.datasource.models.{InputSentences, OffsetConditions, OffsetField, StopConditions}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
-class DatasourceConsumerLimitedSuite extends TemporalDataSuite {
+class ReceiverLimitedSuite extends TemporalDataSuite {
 
   test("DataSource Receiver should read the records limited on each batch") {
     sc = new SparkContext(conf)

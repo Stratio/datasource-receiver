@@ -21,7 +21,7 @@ import org.apache.spark.sql.SQLContext
 import org.apache.spark.streaming.datasource.models.{InputSentences, StopConditions}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
-class DatasourceConsumerWithoutOffsetSuite extends TemporalDataSuite {
+class ReceiverWithoutOffsetSuite extends TemporalDataSuite {
 
   test("DataSource Receiver should read all the records on each batch without offset conditions") {
     sc = new SparkContext(conf)
