@@ -26,21 +26,20 @@ import org.apache.spark.streaming.datasource.receiver.DatasourceDStream
 import org.apache.spark.streaming.dstream.InputDStream
 
 import scala.collection.JavaConverters._
+import scala.reflect.ClassTag
 
 object DatasourceUtils {
 
   /**
-   *
-   * Create an input stream that receives messages from a Datasource queue in distributed mode, each executor can
-   * consume messages from a different cluster or queue-exchange. Is possible to parallelize the consumer in one
-   * executor creating more channels, this is transparent to the user.
-   * The result DStream is mapped to the type R with the function messageHandler.
+   * Create an input stream that receives messages from a Datasource.
+   * The result DStream is mapped to the type Row with the results of the incremental queries.
    *
    * @param ssc              StreamingContext object
-   * @param inputSentences   Object that can contains the connections to the queues, it can be more than one and each
+   * @param inputSentences   Object that can contains the initial query, the offset options for incremental queries
+   *                         and monitoring tables and the stop conditions for the streaming process
    *                         tuple of queue, exchange, routing key and hosts can be one Datasource independent
-   * @param datasourceParams Datasource params with queue options, spark options and consumer options
-   * @return The new DStream with the messages consumed and parsed to the R type
+   * @param datasourceParams Datasource params with spark options for pass to Spark SQL Context
+   * @return The new DStream with the rows extracted from the Datasources
    */
   def createStream(
                     ssc: StreamingContext,
@@ -53,6 +52,18 @@ object DatasourceUtils {
     new DatasourceDStream(ssc, inputSentences, datasourceParams, sqlContext)
   }
 
+  /**
+   * Create an input stream that receives messages from a Datasource.
+   * The result DStream is mapped to the type Row with the results of the incremental queries.
+   *
+   * @param ssc              StreamingContext object
+   * @param inputSentences   Object that can contains the initial query, the offset options for incremental queries
+   *                         and monitoring tables and the stop conditions for the streaming process
+   *                         tuple of queue, exchange, routing key and hosts can be one Datasource independent
+   * @param datasourceParams Datasource params with spark options for pass to Spark SQL Context
+   * @param sqlContext       Generic Context for execute the SQL queries, that must extends Spark SQLContext
+   * @return The new DStream with the rows extracted from the Datasources
+   */
   def createStream[C <: SQLContext](
                                      ssc: StreamingContext,
                                      inputSentences: InputSentences,
@@ -64,24 +75,46 @@ object DatasourceUtils {
   }
 
   /**
+   * Create an input stream that receives messages from a Datasource.
+   * The result DStream is mapped to the type Row with the results of the incremental queries.
    *
-   * Create an input stream that receives messages from a Datasource queue in distributed mode, each executor can
-   * consume messages from a different cluster or queue-exchange. Is possible to parallelize the consumer in one
-   * executor creating more channels, this is transparent to the user.
-   * The result DStream is mapped to the type R with the function messageHandler.
-   *
-   * @param javaStreamingContext JavaStreamingContext object
-   * @param inputSentences       Object that can contains the connections to the queues, it can be more than one and each
-   *                             tuple of queue, exchange, routing key and hosts can be one Datasource independent
-   * @param datasourceParams     Datasource params with queue options, spark options and consumer options
-   * @return The new DStream with the messages consumed and parsed to the R type
+   * @param javaStreamingContext  Java StreamingContext object
+   * @param inputSentences   Object that can contains the initial query, the offset options for incremental queries
+   *                         and monitoring tables and the stop conditions for the streaming process
+   *                         tuple of queue, exchange, routing key and hosts can be one Datasource independent
+   * @param datasourceParams Datasource params with spark options for pass to Spark SQL Context
+   * @return The new DStream with the rows extracted from the Datasources
    */
-  /*def createJavaStream(
+  def createJavaStream(
                         javaStreamingContext: JavaStreamingContext,
                         inputSentences: InputSentences,
                         datasourceParams: JMap[String, String]
                       ): InputDStream[Row] = {
 
-    new DatasourceDStream(javaStreamingContext.ssc, inputSentences, datasourceParams.asScala.toMap)
-  }*/
+    val sqlContext = SQLContext.getOrCreate(javaStreamingContext.sparkContext)
+
+    new DatasourceDStream(javaStreamingContext.ssc, inputSentences, datasourceParams.asScala.toMap, sqlContext)
+  }
+
+  /**
+   * Create an input stream that receives messages from a Datasource.
+   * The result DStream is mapped to the type Row with the results of the incremental queries.
+   *
+   * @param javaStreamingContext  Java StreamingContext object
+   * @param inputSentences   Object that can contains the initial query, the offset options for incremental queries
+   *                         and monitoring tables and the stop conditions for the streaming process
+   *                         tuple of queue, exchange, routing key and hosts can be one Datasource independent
+   * @param datasourceParams Datasource params with spark options for pass to Spark SQL Context
+   * @param sqlContext       Spark SQL Context for execute the SQL queries
+   * @return The new DStream with the rows extracted from the Datasources
+   */
+  def createJavaStream(
+                        javaStreamingContext: JavaStreamingContext,
+                        inputSentences: InputSentences,
+                        datasourceParams: JMap[String, String],
+                        sqlContext: SQLContext
+                      ): InputDStream[Row] = {
+
+    new DatasourceDStream(javaStreamingContext.ssc, inputSentences, datasourceParams.asScala.toMap, sqlContext)
+  }
 }

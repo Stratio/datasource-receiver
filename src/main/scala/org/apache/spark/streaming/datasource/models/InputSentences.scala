@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2015 Stratio (http://stratio.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.spark.streaming.datasource.models
 
 case class InputSentences(
@@ -13,28 +28,52 @@ case class InputSentences(
       s"\nInitialStatements: ${initialStatements.mkString(" , ")}]"
 
   def extractLimitSentence: String =
-    if (
-      !query.toUpperCase.contains("LIMIT") &&
-        offsetConditions.isDefined &&
-        offsetConditions.get.limitRecords.isDefined
-    ) s" LIMIT ${offsetConditions.get.limitRecords.get}"
+    if (offsetConditions.isDefined && offsetConditions.get.limitRecords.isDefined)
+      s" LIMIT ${offsetConditions.get.limitRecords.get}"
     else ""
 }
 
 object InputSentences {
 
+  /**
+   * Constructor for create input objects with the query conditions for monitoring tables from dataSources
+   *
+   * @param query             Initial query same as " select * from tableName "
+   * @param offsetConditions  Conditions object with offset field and results limit
+   * @param initialStatements Initial query statements to execute with the SqlContext. Useful when the user need to
+   *                          create temporal tables related to one table in the dataSource
+   * @return The inputSentence object with all options
+   */
   def apply(
              query: String,
              offsetConditions: OffsetConditions,
              initialStatements: Seq[String]
            ): InputSentences = new InputSentences(query, Option(offsetConditions), None, initialStatements)
 
+  /**
+   * Constructor for create input objects with the query conditions for monitoring tables from dataSources
+   *
+   * @param query             Initial query same as " select * from tableName "
+   * @param initialStatements Initial query statements to execute with the SqlContext. Useful when the user need to
+   *                          create temporal tables related to one table in the dataSource
+   * @return The inputSentence object with all options
+   */
   def apply(
              query: String,
              stopConditions: StopConditions,
              initialStatements: Seq[String]
            ): InputSentences = new InputSentences(query, None, Option(stopConditions), initialStatements)
 
+  /**
+   * Constructor for create input objects with the query conditions for monitoring tables from dataSources
+   *
+   * @param query             Initial query same as " select * from tableName "
+   * @param offsetConditions  Conditions object with offset field and results limit
+   * @param stopConditions    Conditions for stop the streaming context automatically
+   * @param initialStatements Initial query statements to execute with the SqlContext. Useful when the user need to
+   *                          create temporal tables related to one table in the dataSource
+   * @return The inputSentence object with all options
+   */
   def apply(
              query: String,
              offsetConditions: OffsetConditions,
@@ -42,27 +81,62 @@ object InputSentences {
              initialStatements: Seq[String]
            ): InputSentences = new InputSentences(query, Option(offsetConditions), Option(stopConditions), initialStatements)
 
+  /**
+   * Constructor for create input objects with the query conditions for monitoring tables from dataSources
+   *
+   * @param query            Initial query same as " select * from tableName "
+   * @param offsetConditions Conditions object with offset field and results limit
+   * @return The inputSentence object with all options
+   */
   def apply(
              query: String,
              offsetConditions: OffsetConditions
            ): InputSentences = new InputSentences(query, Option(offsetConditions), None, Seq.empty[String])
 
+  /**
+   * Constructor for create input objects with the query conditions for monitoring tables from dataSources
+   *
+   * @param query            Initial query same as " select * from tableName "
+   * @param offsetConditions Conditions object with offset field and results limit
+   * @param stopConditions   Conditions for stop the streaming context automatically
+   * @return The inputSentence object with all options
+   */
   def apply(
              query: String,
              offsetConditions: OffsetConditions,
              stopConditions: StopConditions
            ): InputSentences = new InputSentences(query, Option(offsetConditions), Option(stopConditions), Seq.empty[String])
 
+  /**
+   * Constructor for create input objects with the query conditions for monitoring tables from dataSources
+   *
+   * @param query Initial query same as " select * from tableName "
+   * @return The inputSentence object with all options
+   */
   def apply(
              query: String,
              stopConditions: StopConditions
            ): InputSentences = new InputSentences(query, None, Option(stopConditions), Seq.empty[String])
 
+  /**
+   * Constructor for create input objects with the query conditions for monitoring tables from dataSources
+   *
+   * @param query             Initial query same as " select * from tableName "
+   * @param initialStatements Initial query statements to execute with the SqlContext. Useful when the user need to
+   *                          create temporal tables related to one table in the dataSource
+   * @return The inputSentence object with all options
+   */
   def apply(
              query: String,
              initialStatements: Seq[String]
            ): InputSentences = new InputSentences(query, None, None, initialStatements)
 
+  /**
+   * Constructor for create input objects with the query conditions for monitoring tables from dataSources
+   *
+   * @param query Initial query same as " select * from tableName "
+   * @return The inputSentence object with all options
+   */
   def apply(
              query: String
            ): InputSentences = new InputSentences(query, None, None, Seq.empty[String])

@@ -33,4 +33,12 @@ trait ParametersUtils {
     StorageLevel.fromString(Try(params.getOrElse(StorageLevelKey, DefaultStorageLevel))
       .getOrElse(DefaultStorageLevel))
 
+  def getStopGracefully(params: Map[String, String]): Boolean =
+    Try(params.getOrElse(StopGracefully, DefaultStopGracefully.toString).toBoolean)
+      .getOrElse(DefaultStopGracefully)
+
+  def getStopSparkContext(params: Map[String, String]): Boolean =
+    Try(params.getOrElse(StopSparkContext, DefaultStopSparkContext.toString).toBoolean)
+      .getOrElse(DefaultStopSparkContext)
+
 }
