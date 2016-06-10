@@ -31,7 +31,7 @@ The other one is to clone the full repository and build the project:
 
 The basic idea is receive data in Spark Streaming with Spark Sql:
 
-          ![SparkSQL -> SparkStreaming](./images/SparkSQL-SparkStreaming.jpg)
+  ![SparkSQL -> SparkStreaming](./images/SparkSQL-SparkStreaming.jpg)
  
 Some use cases is monitoring tables, migrating data, generate streaming data from batch data...
 The use of SparkSQL have the advantage that the library is polyglot and can read data from multiple databases, like 
@@ -45,14 +45,14 @@ possible to use it in the initial query. Per example:
  InputSentences("select * from tableName") 
  ```
 
-          ![SparkSQL Datasources](./images/SparkSQL-Datasources.jpg)
+  ![SparkSQL Datasources](./images/SparkSQL-Datasources.jpg)
 
 ### Distributed Approach with SparkSQL
 
 The distributed approach is based in SparkSQL, on each streaming window the receiver execute one query with SparkSQL 
 and generate one DataFrame and the partitions of this DataFrame corresponds with the DStream partitions.
 
-    ![Datasource Receiver distributed with SparkSQL](./images/ArchitectureDatasourceReceiver.jpg)
+  ![Datasource Receiver distributed with SparkSQL](./images/ArchitectureDatasourceReceiver.jpg)
 
 With the receiver is possible to monitoring tables in the datasources, the user specify one offset field and on each 
 window the offset is updated to generate the new incremental query.
