@@ -33,7 +33,7 @@ The basic idea is receive data in Spark Streaming with Spark Sql:
 
   ![SparkSQL -> SparkStreaming](./images/SparkSQL-SparkStreaming.jpg)
  
-Some use cases is monitoring tables, migrating data, generate streaming data from batch data...
+Some use cases are monitoring tables, migrating data, generate streaming data from batch data...
 The use of SparkSQL have the advantage that the library is polyglot and can read data from multiple databases, like 
 JDBC, Cassandra, ElasticSearch, MongoDB ... The user must add the java jar with the connector library and then is 
 possible to use it in the initial query. Per example:
