@@ -20,8 +20,11 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.streaming.datasource.models.{InputSentences, OffsetConditions, OffsetField}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
-class ReceiverNotStopContextSuite extends TemporalDataSuite {
+@RunWith(classOf[JUnitRunner])
+class ReceiverNotStopContextIT extends TemporalDataSuite {
 
   test("DataSource Receiver should read all the records in one streaming batch") {
     sc = new SparkContext(conf)
