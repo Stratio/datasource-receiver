@@ -20,7 +20,7 @@ import org.apache.spark.Logging
 import org.scalatest.concurrent.Timeouts
 import org.scalatest.{FunSuite, Outcome}
 
-private[datasource] abstract class DatasourceSuite extends FunSuite with Timeouts with Logging {
+private[datasource] trait DatasourceSuite extends FunSuite with Timeouts with Logging {
 
   /**
    * Log the suite name and the test name before and after each test.
