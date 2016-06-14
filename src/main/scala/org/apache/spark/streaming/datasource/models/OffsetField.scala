@@ -43,7 +43,11 @@ case class OffsetField(
     }"
 
   private def valueToSqlSentence(value: Any): String =
-    if (value.isInstanceOf[String]) s"'${value.toString}'" else value.toString
+    value match {
+      case valueString : String => s"'$valueString'"
+      case valueDate : java.sql.Timestamp => s"'${valueDate.toString}'"
+      case _ => value.toString
+    }
 }
 
 object OffsetField {
