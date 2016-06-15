@@ -20,36 +20,38 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.streaming.datasource.models.{InputSentences, OffsetConditions, OffsetField, StopConditions}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
-class ReceiverSuite extends TemporalDataSuite {
+@RunWith(classOf[JUnitRunner])
+class ReceiverLimitedIT extends TemporalDataSuite {
 
-  test("DataSource Receiver should read all the records in one streaming batch") {
+  test("DataSource Receiver should read the records limited on each batch") {
     sc = new SparkContext(conf)
     val sqlContext = new SQLContext(sc)
     val rdd = sc.parallelize(registers)
     sqlContext.createDataFrame(rdd, schema).registerTempTable(tableName)
+
     ssc = new StreamingContext(sc, Seconds(1))
     val totalEvents = ssc.sparkContext.accumulator(0L, "Number of events received")
     val inputSentences = InputSentences(
       s"select * from $tableName",
-      OffsetConditions(OffsetField("idInt")),
+      OffsetConditions(OffsetField("idInt"), limitRecords = 1000),
       StopConditions(stopWhenEmpty = true, finishContextWhenEmpty = true),
       initialStatements = Seq.empty[String]
     )
     val distributedStream = DatasourceUtils.createStream(ssc, inputSentences, datasourceParams)
 
+    // Start up the receiver.
     distributedStream.start()
+
+    // Fires each time the configured window has passed.
     distributedStream.foreachRDD(rdd => {
-      val streamingEvents = rdd.count()
-      log.info(s" EVENTS COUNT : \t $streamingEvents")
-      totalEvents += streamingEvents
-      log.info(s" TOTAL EVENTS : \t $totalEvents")
-      val streamingRegisters = rdd.collect()
-      if (!rdd.isEmpty())
-        assert(streamingRegisters === registers.reverse)
+      totalEvents += rdd.count()
     })
-    ssc.start()
-    ssc.awaitTerminationOrTimeout(15000L)
+
+    ssc.start() // Start the computation
+    ssc.awaitTerminationOrTimeout(15000L) // Wait for the computation to terminate
 
     assert(totalEvents.value === totalRegisters.toLong)
   }

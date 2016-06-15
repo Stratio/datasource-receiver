@@ -18,12 +18,16 @@ package org.apache.spark.streaming.datasource
 
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.streaming.datasource.models.{InputSentences, StopConditions}
+import org.apache.spark.streaming.datasource.models.{InputSentences, OffsetConditions, OffsetField, StopConditions}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
-class ReceiverWithoutOffsetSuite extends TemporalDataSuite {
 
-  test("DataSource Receiver should read all the records on each batch without offset conditions") {
+@RunWith(classOf[JUnitRunner])
+class ReceiverBasicIT extends TemporalDataSuite {
+
+  test("DataSource Receiver should read all the records in one streaming batch") {
     sc = new SparkContext(conf)
     val sqlContext = new SQLContext(sc)
     val rdd = sc.parallelize(registers)
@@ -32,6 +36,7 @@ class ReceiverWithoutOffsetSuite extends TemporalDataSuite {
     val totalEvents = ssc.sparkContext.accumulator(0L, "Number of events received")
     val inputSentences = InputSentences(
       s"select * from $tableName",
+      OffsetConditions(OffsetField("idInt")),
       StopConditions(stopWhenEmpty = true, finishContextWhenEmpty = true),
       initialStatements = Seq.empty[String]
     )
@@ -43,13 +48,14 @@ class ReceiverWithoutOffsetSuite extends TemporalDataSuite {
       log.info(s" EVENTS COUNT : \t $streamingEvents")
       totalEvents += streamingEvents
       log.info(s" TOTAL EVENTS : \t $totalEvents")
+      val streamingRegisters = rdd.collect()
       if (!rdd.isEmpty())
-        assert(streamingEvents === totalRegisters.toLong)
+        assert(streamingRegisters === registers.reverse)
     })
     ssc.start()
-    ssc.awaitTerminationOrTimeout(10000L)
+    ssc.awaitTerminationOrTimeout(15000L)
 
-    assert(totalEvents.value === totalRegisters.toLong * 10)
+    assert(totalEvents.value === totalRegisters.toLong)
   }
 }
 
