@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/Stratio/Datasource-Receiver/badge.svg?branch=master)](https://coveralls.io/github/Stratio/Datasource-Receiver?branch=master)
+
 # Datasource-Receiver
 
 Datasource-Receiver is a library that allows the user to read data with [SparkSQL](http://spark.apache.org/docs/latest/sql-programming-guide.html)
