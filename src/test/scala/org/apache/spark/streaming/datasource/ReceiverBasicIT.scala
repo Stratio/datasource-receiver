@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2015 Stratio (http://stratio.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.spark.streaming.datasource
 
 import org.apache.spark.SparkContext
@@ -27,7 +26,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ReceiverBasicIT extends TemporalDataSuite {
 
-  test("DataSource Receiver should read all the records in one streaming batch") {
+  test ("DataSource Receiver should read all the records in one streaming batch") {
     sc = new SparkContext(conf)
     val sqlContext = new SQLContext(sc)
     val rdd = sc.parallelize(registers)

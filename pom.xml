@@ -23,7 +23,7 @@
     <parent>
         <groupId>com.stratio</groupId>
         <artifactId>parent</artifactId>
-        <version>0.7.2</version>
+        <version>0.8.0</version>
     </parent>
 
     <groupId>com.stratio.receiver</groupId>
@@ -114,6 +114,11 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>org/apache/spark/streaming/datasource/**</include>
+                    </includes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
