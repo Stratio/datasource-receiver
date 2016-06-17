@@ -25,7 +25,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ReceiverWithoutOffsetIT extends TemporalDataSuite {
 
-  ignore("DataSource Receiver should read all the records on each batch without offset conditions") {
+  test("DataSource Receiver should read all the records on each batch without offset conditions") {
     sc = new SparkContext(conf)
     val sqlContext = new SQLContext(sc)
     val rdd = sc.parallelize(registers)

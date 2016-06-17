@@ -26,7 +26,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ReceiverBasicIT extends TemporalDataSuite {
 
-  ignore ("DataSource Receiver should read all the records in one streaming batch") {
+  test ("DataSource Receiver should read all the records in one streaming batch") {
     sc = new SparkContext(conf)
     val sqlContext = new SQLContext(sc)
     val rdd = sc.parallelize(registers)
