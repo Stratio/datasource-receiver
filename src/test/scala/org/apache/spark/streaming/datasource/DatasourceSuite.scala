@@ -16,27 +16,12 @@
 package org.apache.spark.streaming.datasource
 
 import org.apache.spark.Logging
-import org.scalatest.concurrent.Timeouts
-import org.scalatest.{FunSuite, Outcome}
+import org.scalatest.FunSuite
+import org.scalatest.concurrent.TimeLimitedTests
+import org.scalatest.time.SpanSugar._
 
-private[datasource] trait DatasourceSuite extends FunSuite with Timeouts with Logging {
+private[datasource] trait DatasourceSuite extends FunSuite with TimeLimitedTests with Logging {
 
-  /**
-   * Log the suite name and the test name before and after each test.
-   *
-   * Subclasses should never override this method. If they wish to run
-   * custom code before and after each test, they should mix in the
-   * {{org.scalatest.BeforeAndAfter}} trait instead.
-   */
-  final protected override def withFixture(test: NoArgTest): Outcome = {
-    val testName = test.text
-    val suiteName = this.getClass.getName
-    val shortSuiteName = suiteName.replaceAll("org.apache.spark", "o.a.s")
-    try {
-      logInfo(s"\n\n===== TEST OUTPUT FOR $shortSuiteName: '$testName' =====\n")
-      test()
-    } finally {
-      logInfo(s"\n\n===== FINISHED $shortSuiteName: '$testName' =====\n")
-    }
-  }
+  val timeLimit = 1 minutes
+
 }
