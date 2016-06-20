@@ -43,8 +43,12 @@ possible to use it in the initial query. Per example:
  - Reading data from MongoDB with the Stratio Library:
  
  ```
- CREATE TEMPORARY TABLE tableName USING com.stratio.datasource.mongodb OPTIONS (host 'localhost', database 'sparta', collection 'streamtrigger'
- InputSentences("select * from tableName") 
+ InputSentences(
+    query = "select * from tableName",
+    initialStatements = Seq(
+      "CREATE TEMPORARY TABLE tableName USING com.stratio.datasource.mongodb OPTIONS (host 'localhost', database 'sparta', collection 'streams'")
+    )
+ ) 
  ```
 
   ![SparkSQL Datasources](./images/SparkSQL-Datasources.jpg)
@@ -67,8 +71,8 @@ conditions. One example:
    ```
    InputSentences(
          query = "select * from tableName",
-         offsetConditions = OffsetConditions(OffsetField("followersCount")),
-         stopConditions = StopConditions(true, true),
+         offsetConditions = OffsetConditions(OffsetField(name = "followersCount")),
+         stopConditions = StopConditions(stopWhenEmpty = true, finishContextWhenEmpty = true),
          initialStatements = Seq("CREATE TEMPORARY TABLE tableName USING com.stratio.datasource.mongodb OPTIONS (host 'localhost', database 'sparta', collection 'streamtrigger')")
    )
    ```

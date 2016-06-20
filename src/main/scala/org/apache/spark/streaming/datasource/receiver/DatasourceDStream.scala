@@ -24,7 +24,7 @@ import org.apache.spark.streaming.datasource.models.InputSentences
 import org.apache.spark.streaming.datasource.receiver.DatasourceDStream._
 import org.apache.spark.streaming.dstream.InputDStream
 import org.apache.spark.streaming.scheduler.rate.RateEstimator
-import org.apache.spark.streaming.scheduler.{RateController, StreamInputInfo}
+import org.apache.spark.streaming.scheduler.{Job, RateController, StreamInputInfo}
 import org.apache.spark.streaming.{Seconds, StreamingContext, Time}
 
 private[streaming]
@@ -134,10 +134,26 @@ class DatasourceDStream[C <: SQLContext](
         computingStopped = true
 
       Option(datasourceRDD)
-    } else {
-      if (inputSentences.stopConditions.isDefined && inputSentences.stopConditions.get.finishContextWhenEmpty)
-        _ssc.stop(stopSparkContext, stopGracefully)
-      None
+    } else None
+  }
+
+  override private[streaming] def generateJob(time: Time): Option[Job] = {
+    getOrCompute(time) match {
+      case Some(rdd) =>
+        val jobFunc = () => {
+          val emptyFunc = { (iterator: Iterator[Row]) => {} }
+          context.sparkContext.runJob(rdd, emptyFunc)
+        }
+        
+        Some(new Job(time, jobFunc))
+      case None =>
+        if (computingStopped &&
+          inputSentences.stopConditions.isDefined &&
+          inputSentences.stopConditions.get.finishContextWhenEmpty
+        )
+          _ssc.stop(stopSparkContext, stopGracefully)
+
+        None
     }
   }
 
